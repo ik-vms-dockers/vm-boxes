@@ -1,0 +1,75 @@
+{
+  "variables": {
+    "ova_source": "{{env `WHONIX_OVA`}}",
+    "name": "whonix-gateway",
+    "tag": "{{env `VAGRANT_USERNAME`}}/{{user `name`}}",
+    "pwd": "changeme"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "headless": "false",
+      "vboxmanage": [
+        ["unregistervm", "Whonix-Workstation-CLI", "--delete"],
+        ["modifyvm", "{{.Name}}", "--memory", "3072"],
+        ["modifyvm", "{{.Name}}", "--cpus", "3"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"],
+        ["setextradata", "{{.Name}}", "GUI/ScaleFactor", "1.25"]
+      ],
+      "source_path": "{{user `ova_source`}}",
+      "format": "ova",
+      "import_flags": [
+        "--vsys",
+        "0",
+        "--eula",
+        "accept",
+        "--vsys",
+        "1",
+        "--eula",
+        "accept"
+      ],
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_handshake_attempts": "10",
+      "boot_wait": "30s",
+      "boot_command": [
+        "user<enter><wait>",
+        "{{user `pwd`}}<enter><wait20>",
+        "<left><enter><wait>",
+        "<left><enter><wait>",
+        "<enter><wait><enter><wait10><enter><wait240>",
+        "sudo su<enter>",
+        "{{user `pwd`}}<enter><wait5>",
+        "curl -fsSL 'https://raw.githubusercontent.com/ivankatliarchuk/vmboxes/master/packer/scripts/whonix/001-bootstrap.sh' | bash -s<enter><wait80>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "sudo -S sh '{{.Path}}'",
+      "scripts": [
+        "packer/scripts/001-base.sh",
+        "packer/scripts/whonix/002-provision.sh",
+        "packer/scripts/099-cleanup.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "output": "{{user `name`}}.box",
+        "compression_level": "9"
+      },
+      {
+        "type": "shell-local",
+        "inline": [
+          "vagrant box remove --force '{{user `tag`}}' || true",
+          "vagrant box add --name '{{user `tag`}}' 'file://{{user `name`}}.box'"
+        ]
+      }
+    ]
+  ]
+}
+

@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "ova_source": "{{env `KALI_OVA`}}",
+    "name": "kali-linux",
+    "tag": "{{env `VAGRANT_USERNAME`}}/{{user `name`}}",
+    "pwd": "kali"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "source_path": "{{user `ova_source`}}",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "3072"],
+        ["modifyvm", "{{.Name}}", "--cpus", "3"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"],
+        ["setextradata", "{{.Name}}", "GUI/ScaleFactor", "1.25"]
+      ],
+      "import_flags": [
+        "--vsys", "0", "--eula", "accept",
+        "--vsys", "0", "--unit", "14", "--ignore"
+      ],
+      "format": "ova",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_handshake_attempts": "10",
+      "guest_additions_mode": "disable",
+      "boot_wait": "60s",
+      "boot_command": [
+        "<leftAltOn><leftCtrlOn><f3><leftAltOff><leftCtrlOff><wait30>",
+        "{{user `pwd`}}<enter><wait>",
+        "{{user `pwd`}}<enter><wait3>",
+        "sudo su<enter><wait3>",
+        "{{user `pwd`}}<enter><wait3>",
+        "curl -fsSL 'https://raw.githubusercontent.com/ivankatliarchuk/vmboxes/master/packer/scripts/kali/002-bootstrap.sh' | bash -s<enter><wait30>"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "output": "{{user `name`}}.box",
+        "compression_level": "9"
+      },
+      {
+        "type": "shell-local",
+        "inline": [
+          "vagrant box remove --force '{{user `tag`}}' || true",
+          "vagrant box add --name '{{user `tag`}}' 'file://{{user `name`}}.box'"
+        ]
+      }
+    ]
+  ]
+}

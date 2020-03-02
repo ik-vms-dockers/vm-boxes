@@ -15,3 +15,11 @@ validate: ## Validate files with pre-commit hooks
 
 login: ## Login to Vagrant Cloud
 	@bin/vlogin.sh
+
+build-whonix: ## Build Whonix VM
+	@packer build packer/whonix.json
+	@vagrant cloud publish --force --release $(VAGRANT_USERNAME)/whonix-gateway $(WHONIX_VERSION) virtualbox whonix-gateway.box
+
+build-kali: ## Build Kali VM
+	@packer build packer/kali.json
+
