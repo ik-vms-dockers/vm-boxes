@@ -79,9 +79,6 @@ https://github.com/alinefr/whonix-vagrant/blob/master/Vagrantfile
 
 ### Build with this scripts
 
-https://gitlab.com/kalilinux/build-scripts/kali-vagrant
-https://gitlab.com/kalilinux/recipes/live-build-config-examples
-
 
 https://github.com/pentesterwtf/packer-kali
 https://github.com/syntacticvexation/packer-kali

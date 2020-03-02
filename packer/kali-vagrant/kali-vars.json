@@ -1,0 +1,6 @@
+{
+  "iso_url": "KALI_ISO_URL",
+  "iso_checksum": "SHA256CHECKSUM",
+  "cloud_box": "cloudkats/kali-rolling",
+  "cloud_version": "2020.1.1"
+}
