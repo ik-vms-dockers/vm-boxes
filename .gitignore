@@ -200,6 +200,7 @@ boxes
 *.tmp
 *.box
 *.ova
+*.iso
 *virtualbox*
 *output*
 .vagrant
