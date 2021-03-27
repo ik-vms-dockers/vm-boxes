@@ -32,7 +32,7 @@
       ],
       "vboxmanage": [
         [
-          "modifyvm", "{{.Name}}", "--memory",  "2048"
+          "modifyvm", "{{.Name}}", "--memory",  "4048"
         ],
         [
           "modifyvm", "{{.Name}}", "--cpus", "2"
